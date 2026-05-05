@@ -13,6 +13,7 @@ import net.vulkanmod.render.chunk.build.light.LightMode;
 import net.vulkanmod.render.vertex.TerrainRenderType;
 import net.vulkanmod.vulkan.Renderer;
 import net.vulkanmod.vulkan.device.DeviceManager;
+import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -371,7 +372,14 @@ public abstract class Options {
                                 .setTooltip(v -> Component.translatable("vulkanmod.options.frameQueue.tooltip")),
                         new SwitchOption(Component.translatable("vulkanmod.options.textureAnimations"),
                                 v -> config.textureAnimations = v,
-                                () -> config.textureAnimations)
+                                () -> config.textureAnimations),
+                        new CyclingOption<>(Component.translatable("vulkanmod.options.hdrOutputMode"),
+                                HdrOutputMode.values(),
+                                value -> {
+                                    config.hdrOutputMode = value;
+                                    Renderer.scheduleSwapChainUpdate();
+                                },
+                                () -> config.hdrOutputMode)
                 }),
                 new OptionBlock("", new Option<?>[]{
                         new CyclingOption<>(Component.translatable("vulkanmod.options.deviceSelector"),

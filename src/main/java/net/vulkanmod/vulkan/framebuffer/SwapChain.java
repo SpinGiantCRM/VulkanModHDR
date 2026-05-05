@@ -26,6 +26,8 @@ import static org.lwjgl.system.MemoryStack.stackGet;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
+import static org.lwjgl.vulkan.EXTHdrMetadata.VK_EXT_HDR_METADATA_EXTENSION_NAME;
+import static org.lwjgl.vulkan.EXTSwapchainColorspace.VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class SwapChain extends Framebuffer {
@@ -41,6 +43,7 @@ public class SwapChain extends Framebuffer {
     public boolean isBGRAformat;
     private boolean vsync = false;
     private boolean hasImages = false;
+    private HdrOutputMode activeHdrOutputMode = HdrOutputMode.OFF;
 
     public SwapChain() {
         this.attachmentCount = 2;
@@ -71,7 +74,14 @@ public class SwapChain extends Framebuffer {
             VkDevice device = Vulkan.getVkDevice();
             DeviceManager.SurfaceProperties surfaceProperties = DeviceManager.querySurfaceProperties(device.getPhysicalDevice(), stack);
 
-            VkSurfaceFormatKHR surfaceFormat = getFormat(surfaceProperties.formats);
+            HdrOutputMode requestedHdrMode = Initializer.CONFIG.hdrOutputMode == null ? HdrOutputMode.OFF : Initializer.CONFIG.hdrOutputMode;
+            boolean swapchainColorspaceSupported = DeviceManager.device.supportsExtension(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
+            boolean hdrMetadataSupported = DeviceManager.device.supportsExtension(VK_EXT_HDR_METADATA_EXTENSION_NAME);
+            var selectedFormat = SwapchainFormatSelector.select(surfaceProperties.formats, requestedHdrMode, swapchainColorspaceSupported);
+            VkSurfaceFormatKHR surfaceFormat = selectedFormat.format();
+            this.activeHdrOutputMode = selectedFormat.activeMode();
+            Initializer.LOGGER.info("HDR capability: VK_EXT_swapchain_colorspace={}, VK_EXT_hdr_metadata={}, requestedMode={}, selectedMode={}",
+                    swapchainColorspaceSupported, hdrMetadataSupported, requestedHdrMode, this.activeHdrOutputMode);
             int presentMode = getPresentMode(surfaceProperties.presentModes);
             VkExtent2D extent = getExtent(surfaceProperties.capabilities);
 
@@ -158,6 +168,8 @@ public class SwapChain extends Framebuffer {
                 image.setSampler(samplerId);
                 this.swapChainImages.add(image);
             }
+
+            HdrMetadataHelper.applyMetadata(this.swapChainId, this.activeHdrOutputMode, hdrMetadataSupported);
         }
 
         createDepthResources();
@@ -217,25 +229,6 @@ public class SwapChain extends Framebuffer {
         this.swapChainImages.forEach(image -> vkDestroyImageView(device, image.getImageView(), null));
 
         this.depthAttachment.free();
-    }
-
-    private VkSurfaceFormatKHR getFormat(VkSurfaceFormatKHR.Buffer availableFormats) {
-        List<VkSurfaceFormatKHR> list = availableFormats.stream().toList();
-
-        VkSurfaceFormatKHR format = list.get(0);
-
-        for (VkSurfaceFormatKHR availableFormat : list) {
-            if (availableFormat.format() == VK_FORMAT_R8G8B8A8_UNORM && availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-                return availableFormat;
-
-            if (availableFormat.format() == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                format = availableFormat;
-            }
-        }
-
-        if (format.format() == VK_FORMAT_B8G8R8A8_UNORM)
-            isBGRAformat = true;
-        return format;
     }
 
     private int getPresentMode(IntBuffer availablePresentModes) {
