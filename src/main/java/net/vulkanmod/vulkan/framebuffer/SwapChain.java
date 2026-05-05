@@ -82,6 +82,8 @@ public class SwapChain extends Framebuffer {
             this.activeHdrOutputMode = selectedFormat.activeMode();
             Initializer.LOGGER.info("HDR capability: VK_EXT_swapchain_colorspace={}, VK_EXT_hdr_metadata={}, requestedMode={}, selectedMode={}",
                     swapchainColorspaceSupported, hdrMetadataSupported, requestedHdrMode, this.activeHdrOutputMode);
+            Initializer.LOGGER.info("HDR pipeline activeMode={}, toneMapper={}, surfaceFormat={}, colorSpace={}",
+                    this.activeHdrOutputMode, Initializer.CONFIG.toneMapper, surfaceFormat.format(), surfaceFormat.colorSpace());
             int presentMode = getPresentMode(surfaceProperties.presentModes);
             VkExtent2D extent = getExtent(surfaceProperties.capabilities);
 

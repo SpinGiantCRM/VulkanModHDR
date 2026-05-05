@@ -6,6 +6,7 @@ import net.vulkanmod.Initializer;
 import net.vulkanmod.vulkan.Renderer;
 import net.vulkanmod.vulkan.VRenderSystem;
 import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
+import net.vulkanmod.vulkan.framebuffer.HdrToneMapper;
 import net.vulkanmod.vulkan.shader.layout.Uniform;
 import net.vulkanmod.vulkan.util.MappedBuffer;
 
@@ -47,6 +48,8 @@ public class Uniforms {
         vec1f_uniformMap.put("HdrPaperWhiteNits", () -> Initializer.CONFIG.paperWhiteNits);
         vec1f_uniformMap.put("HdrPeakNits", () -> Initializer.CONFIG.peakNits);
         vec1f_uniformMap.put("HdrExposure", () -> Initializer.CONFIG.exposure);
+        vec1f_uniformMap.put("HdrSaturation", () -> Initializer.CONFIG.saturation);
+        vec1f_uniformMap.put("HdrToneMapper", Uniforms::getHdrToneMapperValue);
         vec1f_uniformMap.put("HdrOutputMode", Uniforms::getHdrOutputModeValue);
 
         //Vec2
@@ -62,6 +65,15 @@ public class Uniforms {
         vec4f_uniformMap.put("ColorModulator", VRenderSystem::getShaderColor);
         vec4f_uniformMap.put("FogColor", VRenderSystem::getShaderFogColor);
 
+    }
+
+    private static float getHdrToneMapperValue() {
+        HdrToneMapper mapper = Initializer.CONFIG.toneMapper == null ? HdrToneMapper.REINHARD : Initializer.CONFIG.toneMapper;
+        return switch (mapper) {
+            case REINHARD -> 0.0f;
+            case ACES -> 1.0f;
+            case LINEAR_CLAMP -> 2.0f;
+        };
     }
 
     private static float getHdrOutputModeValue() {

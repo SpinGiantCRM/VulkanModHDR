@@ -5,6 +5,8 @@ layout(binding = 1) uniform UBO {
     float HdrPaperWhiteNits;
     float HdrPeakNits;
     float HdrExposure;
+    float HdrSaturation;
+    float HdrToneMapper;
     float HdrOutputMode;
 };
 
@@ -28,7 +30,21 @@ void main() {
     float paperWhiteScale = paperWhiteNits / peakNits;
 
     vec3 displayLinear = sceneLinear * paperWhiteScale;
-    displayLinear = displayLinear / (displayLinear + vec3(1.0));
+    if (HdrToneMapper < 0.5) {
+        displayLinear = displayLinear / (displayLinear + vec3(1.0));
+    } else if (HdrToneMapper < 1.5) {
+        const float a = 2.51;
+        const float b = 0.03;
+        const float c = 2.43;
+        const float d = 0.59;
+        const float e = 0.14;
+        displayLinear = clamp((displayLinear * (a * displayLinear + b)) / (displayLinear * (c * displayLinear + d) + e), vec3(0.0), vec3(1.0));
+    } else {
+        displayLinear = clamp(displayLinear, vec3(0.0), vec3(1.0));
+    }
+
+    float luma = dot(displayLinear, vec3(0.2126, 0.7152, 0.0722));
+    displayLinear = mix(vec3(luma), displayLinear, clamp(HdrSaturation, 0.0, 2.0));
 
     if (HdrOutputMode < 1.5) {
         vec3 pqNits = displayLinear * peakNits;
