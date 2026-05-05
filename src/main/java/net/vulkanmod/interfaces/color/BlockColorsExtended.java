@@ -1,6 +1,6 @@
 package net.vulkanmod.interfaces.color;
 
-import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.block.BlockTintSources;
 import net.vulkanmod.render.chunk.build.color.BlockColorRegistry;
 
 public interface BlockColorsExtended {

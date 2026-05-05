@@ -6,15 +6,15 @@ import net.fabricmc.fabric.api.client.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.client.renderer.v1.model.ModelHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -224,9 +224,9 @@ public abstract class AbstractBlockRenderContext extends AbstractRenderContext {
 	}
 
 	private int getBlockColor(BlockAndTintGetter region, int colorIndex) {
-		BlockColor blockColor = this.blockColorRegistry.getBlockColor(this.blockState.getBlock());
+		BlockTintSource blockColor = this.blockColorRegistry.getBlockColor(this.blockState.getBlock());
 
-		int color = blockColor != null ? blockColor.getColor(blockState, region, blockPos, colorIndex) : -1;
+		int color = blockColor != null ? blockColor.colorInWorld(blockState, region, blockPos) : -1;
 		return 0xFF000000 | color;
 	}
 
@@ -267,7 +267,7 @@ public abstract class AbstractBlockRenderContext extends AbstractRenderContext {
 				continue;
 			}
 
-			final List<BlockModelPart> parts = ((BlockStateModel) this).collectParts(random);
+			final List<BlockStateModelPart> parts = ((BlockStateModel) this).collectParts(random);
 			final int partCount = parts.size();
 
 			for (int j = 0; j < partCount; j++) {
