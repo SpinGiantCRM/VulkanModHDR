@@ -48,7 +48,7 @@ import java.util.function.Supplier;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.vulkan.VK10.*;
 
-public class VkCommandEncoder implements CommandEncoder {
+public class VkCommandEncoder extends CommandEncoder {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final VkGpuDevice device;
 
@@ -62,6 +62,7 @@ public class VkCommandEncoder implements CommandEncoder {
     private int framebufferId = VkGlFramebuffer.genFramebufferId();
 
     protected VkCommandEncoder(VkGpuDevice glDevice) {
+        super(null, null);
         this.device = glDevice;
     }
 

@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
-public class VkRenderPass implements RenderPass {
+public class VkRenderPass extends RenderPass {
     protected static final int MAX_VERTEX_BUFFERS = 1;
     public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE;
     private final VkCommandEncoder encoder;
@@ -41,6 +41,7 @@ public class VkRenderPass implements RenderPass {
     protected int pushedDebugGroups;
 
     public VkRenderPass(VkCommandEncoder commandEncoder, boolean bl) {
+        super(null, null);
         this.encoder = commandEncoder;
         this.hasDepthTexture = bl;
     }
@@ -86,7 +87,7 @@ public class VkRenderPass implements RenderPass {
     }
 
     @Override
-    public void bindSampler(String string, @Nullable GpuTextureView gpuTextureView) {
+    public void bindTexture(String string, @Nullable GpuTextureView gpuTextureView, @Nullable com.mojang.blaze3d.textures.GpuSampler gpuSampler) {
         if (gpuTextureView == null) {
             this.samplers.remove(string);
         } else {
