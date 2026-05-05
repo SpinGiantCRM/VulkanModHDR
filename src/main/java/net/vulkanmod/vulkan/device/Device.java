@@ -36,6 +36,8 @@ public class Device {
 
     private boolean drawIndirectSupported;
     private final Set<String> availableExtensions;
+        this.availableExtensions = getAvailableExtensions();
+    private final Set<String> availableExtensions;
 
     public Device(VkPhysicalDevice device) {
         this.physicalDevice = device;
@@ -105,21 +107,19 @@ public class Device {
         };
     }
 
-    // Source: https://www.intel.com/content/www/us/en/support/articles/000005654/graphics.html
-    // Won't Work with older Drivers (15.45 And.or older)
-    // May not work as this uses Guess work+Assumptions
-    private static String decIntelVersion(int v) {
-        return (glfwGetPlatform() == GLFW_PLATFORM_WIN32) ? (v >>> 14) + "." + (v & 0x3fff) : decDefVersion(v);
+        Set<String> unsupportedExtensions = new HashSet<>(requiredExtensions);
+        unsupportedExtensions.removeAll(this.availableExtensions);
+        return unsupportedExtensions;
     }
-
-
-    private static String decodeNvidia(int v) {
-        return (v >>> 22 & 0x3FF) + "." + (v >>> 14 & 0xff) + "." + (v >>> 6 & 0xff) + "." + (v & 0xff);
+    public boolean supportsExtension(String extensionName) {
+        return this.availableExtensions.contains(extensionName);
     }
-
-    static int getVkVer() {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            var a = stack.mallocInt(1);
+    private Set<String> getAvailableExtensions() {
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer extensionCount = stack.ints(0);
+            VkExtensionProperties.Buffer extensionsBuffer = VkExtensionProperties.malloc(extensionCount.get(0), stack);
+            vkEnumerateDeviceExtensionProperties(physicalDevice, (String) null, extensionCount, extensionsBuffer);
+            return extensionsBuffer.stream().map(VkExtensionProperties::extensionNameString).collect(toSet());
             vkEnumerateInstanceVersion(a);
             int vkVer1 = a.get(0);
             if (VK_VERSION_MINOR(vkVer1) < 2) {

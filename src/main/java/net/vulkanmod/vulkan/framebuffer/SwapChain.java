@@ -28,6 +28,20 @@ import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.EXTHdrMetadata.VK_EXT_HDR_METADATA_EXTENSION_NAME;
 import static org.lwjgl.vulkan.EXTSwapchainColorspace.VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME;
+    private HdrOutputMode activeHdrOutputMode = HdrOutputMode.OFF;
+    private DisplayOutputManager displayOutputManager;
+            HdrOutputMode requestedHdrMode = Initializer.CONFIG.hdrOutputMode == null ? HdrOutputMode.OFF : Initializer.CONFIG.hdrOutputMode;
+            boolean swapchainColorspaceSupported = DeviceManager.device.supportsExtension(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
+            boolean hdrMetadataSupported = DeviceManager.device.supportsExtension(VK_EXT_HDR_METADATA_EXTENSION_NAME);
+            SwapchainOutputState outputState = SwapchainFormatSelector.select(surfaceProperties.formats, requestedHdrMode, swapchainColorspaceSupported);
+            VkSurfaceFormatKHR surfaceFormat = outputState.format();
+            this.displayOutputManager = new DisplayOutputManager(hdrMetadataSupported);
+            this.activeHdrOutputMode = outputState.activeMode();
+            Initializer.LOGGER.info("HDR capability: VK_EXT_swapchain_colorspace={}, VK_EXT_hdr_metadata={}, requestedMode={}, selectedMode={}",
+                    swapchainColorspaceSupported, hdrMetadataSupported, requestedHdrMode, this.activeHdrOutputMode);
+            Initializer.LOGGER.info("HDR pipeline activeMode={}, toneMapper={}, surfaceFormat={}, colorSpace={}",
+                    this.activeHdrOutputMode, Initializer.CONFIG.toneMapper, surfaceFormat.format(), surfaceFormat.colorSpace());
+import static org.lwjgl.vulkan.EXTSwapchainColorspace.VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class SwapChain extends Framebuffer {
@@ -134,6 +148,9 @@ public class SwapChain extends Framebuffer {
                 createInfo.imageSharingMode(VK_SHARING_MODE_EXCLUSIVE);
             }
 
+
+            this.displayOutputManager.onSwapchainCreated(this.swapChainId, outputState);
+            this.activeHdrOutputMode = this.displayOutputManager.getActiveMode();
             createInfo.preTransform(surfaceProperties.capabilities.currentTransform());
             createInfo.compositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR);
             createInfo.presentMode(presentMode);
@@ -194,25 +211,6 @@ public class SwapChain extends Framebuffer {
                 VkFramebufferCreateInfo framebufferInfo = VkFramebufferCreateInfo.calloc(stack);
                 framebufferInfo.sType(VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO);
                 framebufferInfo.renderPass(renderPass.getId());
-                framebufferInfo.width(this.width);
-                framebufferInfo.height(this.height);
-                framebufferInfo.layers(1);
-                framebufferInfo.pAttachments(attachments);
-
-                if (vkCreateFramebuffer(Vulkan.getVkDevice(), framebufferInfo, null, pFramebuffer) != VK_SUCCESS) {
-                    throw new RuntimeException("Failed to create framebuffer");
-                }
-
-                framebuffers[i] = pFramebuffer.get(0);
-            }
-
-            return framebuffers;
-        }
-    }
-
-    private void createDepthResources() {
-        this.depthAttachment = VulkanImage.createDepthImage(depthFormat, this.width, this.height,
-                                                            VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                                                             false, false);
     }
 
@@ -337,6 +335,10 @@ public class SwapChain extends Framebuffer {
 
     public int getImagesNum() {
         return this.swapChainImages.size();
+    }
+
+    public HdrOutputMode getActiveHdrOutputMode() {
+        return this.activeHdrOutputMode;
     }
 
     public HdrOutputMode getActiveHdrOutputMode() {

@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.12-SNAPSHOT'
+	id 'fabric-loom' version '1.15.5'
 	id 'maven-publish'
 }
 
@@ -20,27 +20,24 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	ext.includeModule = { name ->
-		var module = fabricApi.module(name, project.fabric_version)
+	// Fabric API modules pinned to upstream 26.1.x 0.6.5 jar line.
+	[
+		"net.fabricmc.fabric-api:fabric-api-base:2.0.3+ece06323b3",
+		"net.fabricmc.fabric-api:fabric-block-getter-api-v2:2.0.6+ec56b601b3",
+		"net.fabricmc.fabric-api:fabric-lifecycle-events-v1:4.0.6+a9b9c176b3",
+		"net.fabricmc.fabric-api:fabric-renderer-api-v1:13.0.0+c80601bbb3",
+		"net.fabricmc.fabric-api:fabric-rendering-fluids-v1:6.0.1+d871b99eb3",
+		"net.fabricmc.fabric-api:fabric-rendering-v1:23.0.4+c7e428fdb3",
+		"net.fabricmc.fabric-api:fabric-resource-loader-v0:3.3.16+4fc5413fb3",
+		"net.fabricmc.fabric-api:fabric-resource-loader-v1:2.0.9+d871b99eb3",
+		"net.fabricmc.fabric-api:fabric-transitive-access-wideners-v1:8.0.11+d871b99eb3"
+	].each { module ->
 		modImplementation(module)
 		include(module)
 	}
-
-	includeModule("fabric-api-base")
-	includeModule("fabric-resource-loader-v0")
-	includeModule("fabric-resource-loader-v1")
-	includeModule("fabric-rendering-v1")
-	includeModule("fabric-renderer-api-v1")
-	includeModule("fabric-rendering-fluids-v1")
-	includeModule("fabric-block-view-api-v2")
-	includeModule("fabric-lifecycle-events-v1")
-	includeModule("fabric-transitive-access-wideners-v1")
 }
 
-project.ext.lwjglVersion = "3.3.3"
+project.ext.lwjglVersion = "3.4.1"
 project.ext.jomlVersion = "1.10.4"
 project.ext.winNatives = "natives-windows"
 project.ext.linuxNatives = "natives-linux"
@@ -110,6 +107,15 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+dependencies {
+	testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+}
+
+
+tasks.named("test") {
+	useJUnitPlatform()
 }
 
 dependencies {
