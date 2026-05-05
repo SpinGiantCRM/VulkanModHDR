@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.vulkanmod.config.video.VideoModeManager;
 import net.vulkanmod.config.video.VideoModeSet;
+import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class Config {
 
     public boolean backFaceCulling = true;
     public boolean textureAnimations = true;
+    public HdrOutputMode hdrOutputMode = HdrOutputMode.OFF;
 
     public void write() {
         if (!Files.exists(CONFIG_PATH.getParent())) {

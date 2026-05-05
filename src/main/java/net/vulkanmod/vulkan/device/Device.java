@@ -35,6 +35,7 @@ public class Device {
 //    public final boolean vulkan13Support;
 
     private boolean drawIndirectSupported;
+    private final Set<String> availableExtensions;
 
     public Device(VkPhysicalDevice device) {
         this.physicalDevice = device;
@@ -63,6 +64,7 @@ public class Device {
 //        this.vulkan13Support = this.device.getCapabilities().apiVersion == VK_API_VERSION_1_3;
 
         vkGetPhysicalDeviceFeatures2(this.physicalDevice, this.availableFeatures);
+        this.availableExtensions = getAvailableExtensions();
 
         if (this.availableFeatures.features().multiDrawIndirect() && this.availableFeatures11.shaderDrawParameters())
             this.drawIndirectSupported = true;
@@ -128,24 +130,22 @@ public class Device {
     }
 
     public Set<String> getUnsupportedExtensions(Set<String> requiredExtensions) {
+        Set<String> unsupportedExtensions = new HashSet<>(requiredExtensions);
+        unsupportedExtensions.removeAll(this.availableExtensions);
+        return unsupportedExtensions;
+    }
+
+    public boolean supportsExtension(String extensionName) {
+        return this.availableExtensions.contains(extensionName);
+    }
+
+    private Set<String> getAvailableExtensions() {
         try (MemoryStack stack = stackPush()) {
-
             IntBuffer extensionCount = stack.ints(0);
-
             vkEnumerateDeviceExtensionProperties(physicalDevice, (String) null, extensionCount, null);
-
-            VkExtensionProperties.Buffer availableExtensions = VkExtensionProperties.malloc(extensionCount.get(0), stack);
-
-            vkEnumerateDeviceExtensionProperties(physicalDevice, (String) null, extensionCount, availableExtensions);
-
-            Set<String> extensions = availableExtensions.stream()
-                    .map(VkExtensionProperties::extensionNameString)
-                    .collect(toSet());
-
-            Set<String> unsupportedExtensions = new HashSet<>(requiredExtensions);
-            unsupportedExtensions.removeAll(extensions);
-
-            return unsupportedExtensions;
+            VkExtensionProperties.Buffer extensionsBuffer = VkExtensionProperties.malloc(extensionCount.get(0), stack);
+            vkEnumerateDeviceExtensionProperties(physicalDevice, (String) null, extensionCount, extensionsBuffer);
+            return extensionsBuffer.stream().map(VkExtensionProperties::extensionNameString).collect(toSet());
         }
     }
 
