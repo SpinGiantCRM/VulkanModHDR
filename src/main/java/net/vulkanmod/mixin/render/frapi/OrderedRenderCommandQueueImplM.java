@@ -20,7 +20,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.MeshView;
 
 import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
-import net.minecraft.client.render.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeStorage;
 

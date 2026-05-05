@@ -1,6 +1,6 @@
 package net.vulkanmod.mixin.render;
 
-import net.minecraft.client.render.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.vulkanmod.interfaces.ExtendedRenderType;
 import net.vulkanmod.render.vertex.TerrainRenderType;
 import org.spongepowered.asm.mixin.Mixin;

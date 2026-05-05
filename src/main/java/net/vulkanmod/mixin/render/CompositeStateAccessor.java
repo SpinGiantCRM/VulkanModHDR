@@ -2,7 +2,7 @@ package net.vulkanmod.mixin.render;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.render.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
