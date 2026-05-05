@@ -333,4 +333,8 @@ public class SwapChain extends Framebuffer {
     public int getImagesNum() {
         return this.swapChainImages.size();
     }
+
+    public HdrOutputMode getActiveHdrOutputMode() {
+        return this.activeHdrOutputMode;
+    }
 }

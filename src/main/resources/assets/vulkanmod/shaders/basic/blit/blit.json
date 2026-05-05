@@ -1,5 +1,17 @@
 {
     "samplers": [
         { "name": "Sampler0" }
+    ],
+    "UBOs": [
+        {
+            "binding": 1,
+            "type": "fragment",
+            "fields": [
+                { "name": "HdrPaperWhiteNits", "type": "float" },
+                { "name": "HdrPeakNits", "type": "float" },
+                { "name": "HdrExposure", "type": "float" },
+                { "name": "HdrOutputMode", "type": "float" }
+            ]
+        }
     ]
 }

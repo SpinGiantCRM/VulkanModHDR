@@ -31,6 +31,9 @@ public class Config {
     public boolean backFaceCulling = true;
     public boolean textureAnimations = true;
     public HdrOutputMode hdrOutputMode = HdrOutputMode.OFF;
+    public float paperWhiteNits = 200.0f;
+    public float peakNits = 1000.0f;
+    public float exposure = 1.0f;
 
     public void write() {
         if (!Files.exists(CONFIG_PATH.getParent())) {
