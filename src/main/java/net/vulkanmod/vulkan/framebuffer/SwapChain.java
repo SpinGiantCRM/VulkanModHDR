@@ -44,6 +44,7 @@ public class SwapChain extends Framebuffer {
     private boolean vsync = false;
     private boolean hasImages = false;
     private HdrOutputMode activeHdrOutputMode = HdrOutputMode.OFF;
+    private DisplayOutputManager displayOutputManager;
 
     public SwapChain() {
         this.attachmentCount = 2;
@@ -77,9 +78,10 @@ public class SwapChain extends Framebuffer {
             HdrOutputMode requestedHdrMode = Initializer.CONFIG.hdrOutputMode == null ? HdrOutputMode.OFF : Initializer.CONFIG.hdrOutputMode;
             boolean swapchainColorspaceSupported = DeviceManager.device.supportsExtension(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
             boolean hdrMetadataSupported = DeviceManager.device.supportsExtension(VK_EXT_HDR_METADATA_EXTENSION_NAME);
-            var selectedFormat = SwapchainFormatSelector.select(surfaceProperties.formats, requestedHdrMode, swapchainColorspaceSupported);
-            VkSurfaceFormatKHR surfaceFormat = selectedFormat.format();
-            this.activeHdrOutputMode = selectedFormat.activeMode();
+            SwapchainOutputState outputState = SwapchainFormatSelector.select(surfaceProperties.formats, requestedHdrMode, swapchainColorspaceSupported);
+            VkSurfaceFormatKHR surfaceFormat = outputState.format();
+            this.displayOutputManager = new DisplayOutputManager(hdrMetadataSupported);
+            this.activeHdrOutputMode = outputState.activeMode();
             Initializer.LOGGER.info("HDR capability: VK_EXT_swapchain_colorspace={}, VK_EXT_hdr_metadata={}, requestedMode={}, selectedMode={}",
                     swapchainColorspaceSupported, hdrMetadataSupported, requestedHdrMode, this.activeHdrOutputMode);
             Initializer.LOGGER.info("HDR pipeline activeMode={}, toneMapper={}, surfaceFormat={}, colorSpace={}",
@@ -171,7 +173,8 @@ public class SwapChain extends Framebuffer {
                 this.swapChainImages.add(image);
             }
 
-            HdrMetadataHelper.applyMetadata(this.swapChainId, this.activeHdrOutputMode, hdrMetadataSupported);
+            this.displayOutputManager.onSwapchainCreated(this.swapChainId, outputState);
+            this.activeHdrOutputMode = this.displayOutputManager.getActiveMode();
         }
 
         createDepthResources();
