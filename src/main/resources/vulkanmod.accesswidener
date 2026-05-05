@@ -1,20 +1,20 @@
-accessWidener	v1	named
+accessWidener	v1	intermediary
 
-accessible class net/minecraft/client/model/geom/ModelPart$Polygon
-accessible class net/minecraft/client/model/geom/ModelPart$Vertex
-accessible class net/minecraft/client/gui/Gui$HeartType
+accessible class net/minecraft/class_630$class_593
+accessible class net/minecraft/class_630$class_618
+accessible class net/minecraft/class_329$class_6411
 
-accessible class net/minecraft/client/renderer/OutlineBufferSource$EntityOutlineGenerator
+accessible class net/minecraft/class_4618$class_4586
 
-accessible class net/minecraft/client/renderer/texture/SpriteContents$Ticker
-accessible class net/minecraft/client/renderer/texture/SpriteContents$FrameInfo
-accessible class net/minecraft/client/renderer/texture/SpriteContents$AnimatedTexture
-accessible field net/minecraft/client/renderer/texture/SpriteContents$AnimatedTexture frames Ljava/util/List;
-accessible field net/minecraft/client/renderer/texture/SpriteContents$FrameInfo time I
+accessible class net/minecraft/class_7764$class_7765
+accessible class net/minecraft/class_7764$class_5791
+accessible class net/minecraft/class_7764$class_5790
+accessible field net/minecraft/class_7764$class_5790 field_28472 Ljava/util/List;
+accessible field net/minecraft/class_7764$class_5791 comp_3446 I
 
 #1.20
-accessible field net/minecraft/client/renderer/RenderStateShard name Ljava/lang/String;
+accessible field net/minecraft/class_4668 field_21363 Ljava/lang/String;
 
-accessible class net/minecraft/client/renderer/ShaderManager$ShaderSourceKey
-accessible method net/minecraft/client/renderer/ShaderManager$ShaderSourceKey <init> (Lnet/minecraft/resources/ResourceLocation;Lcom/mojang/blaze3d/shaders/ShaderType;)V
-accessible class net/minecraft/client/renderer/ShaderManager$CompilationCache
+accessible class net/minecraft/class_10151$class_10155
+accessible method net/minecraft/class_10151$class_10155 <init> (Lnet/minecraft/class_2960;Lcom/mojang/blaze3d/shaders/ShaderType;)V
+accessible class net/minecraft/class_10151$class_10170
