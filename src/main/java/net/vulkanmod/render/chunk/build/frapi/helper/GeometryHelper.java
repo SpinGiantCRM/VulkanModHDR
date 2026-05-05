@@ -18,7 +18,7 @@ package net.vulkanmod.render.chunk.build.frapi.helper;
 
 import static net.minecraft.util.Mth.equal;
 
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadView;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;

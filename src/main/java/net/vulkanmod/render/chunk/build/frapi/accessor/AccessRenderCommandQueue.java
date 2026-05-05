@@ -1,8 +1,8 @@
 package net.vulkanmod.render.chunk.build.frapi.accessor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.fabric.api.renderer.v1.mesh.MeshView;
-import net.minecraft.client.renderer.RenderType;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.MeshView;
+import net.minecraft.client.render.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.item.ItemDisplayContext;

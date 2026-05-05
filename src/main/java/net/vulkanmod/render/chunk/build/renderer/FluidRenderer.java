@@ -2,7 +2,7 @@ package net.vulkanmod.render.chunk.build.renderer;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
-import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderingRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRendering;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -58,7 +58,7 @@ public class FluidRenderer implements FluidRendering.DefaultRenderer {
     }
 
     public void renderLiquid(BlockState blockState, FluidState fluidState, BlockPos blockPos) {
-        FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluidState.getType());
+        FluidRenderHandler handler = FluidRenderingRegistry.INSTANCE.get(fluidState.getType());
 
         TerrainRenderType renderType = TerrainRenderType.get(ItemBlockRenderTypes.getRenderLayer(fluidState));
         renderType = TerrainRenderType.getRemapped(renderType);
@@ -67,7 +67,7 @@ public class FluidRenderer implements FluidRendering.DefaultRenderer {
         // Fallback to water/lava in case there's no handler
         if (handler == null) {
             boolean isLava = fluidState.is(FluidTags.LAVA);
-            handler = FluidRenderHandlerRegistry.INSTANCE.get(isLava ? Fluids.LAVA : Fluids.WATER);
+            handler = FluidRenderingRegistry.INSTANCE.get(isLava ? Fluids.LAVA : Fluids.WATER);
         }
 
         FluidRendering.render(handler, this.resources.getRegion(),blockPos, bufferBuilder, blockState, fluidState, this);
@@ -351,7 +351,7 @@ public class FluidRenderer implements FluidRendering.DefaultRenderer {
             boolean isOverlay = false;
 
             if (sprites.length > 2) {
-                if (FluidRenderHandlerRegistry.INSTANCE.isBlockTransparent(adjState.getBlock())) {
+                if (FluidRenderingRegistry.INSTANCE.isBlockTransparent(adjState.getBlock())) {
                     sprite = sprites[2];
                     isOverlay = true;
                 }
