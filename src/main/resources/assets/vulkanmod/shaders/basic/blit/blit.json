@@ -15,5 +15,19 @@
                 { "name": "HdrOutputMode", "type": "float" }
             ]
         }
+    ],
+    "UBOs": [
+        {
+            "binding": 1,
+            "type": "fragment",
+            "fields": [
+                { "name": "HdrPaperWhiteNits", "type": "float" },
+                { "name": "HdrPeakNits", "type": "float" },
+                { "name": "HdrExposure", "type": "float" },
+                { "name": "HdrSaturation", "type": "float" },
+                { "name": "HdrToneMapper", "type": "float" },
+                { "name": "HdrOutputMode", "type": "float" }
+            ]
+        }
     ]
 }

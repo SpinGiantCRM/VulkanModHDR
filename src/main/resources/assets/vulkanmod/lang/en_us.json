@@ -65,5 +65,15 @@
   "vulkanmod.options.hdrSaturation": "HDR Saturation",
   "vulkanmod.options.hdrToneMapper": "HDR Tone Mapper",
 
+}
+  "vulkanmod.options.hdrPaperWhiteNits": "HDR Paper White (nits)",
+  "vulkanmod.options.hdrPeakNits": "HDR Peak Nits",
+  "vulkanmod.options.hdrExposure": "HDR Exposure",
+  "vulkanmod.options.hdrMinNits": "HDR Min Nits",
+  "vulkanmod.options.hdrMaxCLL": "HDR MaxCLL",
+  "vulkanmod.options.hdrMaxFALL": "HDR MaxFALL",
+  "vulkanmod.options.hdrSaturation": "HDR Saturation",
+  "vulkanmod.options.hdrToneMapper": "HDR Tone Mapper",
+
   "vulkanmod.options.searchFieldPlaceholder": "Search Graphics Settings"
 }

@@ -9,9 +9,11 @@
     "Collateral",
     "VulkanMod contributors",
     "SpinGiantCRM - HDR fork changes"
-  ],
-  "contact": {
     "homepage": "https://github.com/xCollateral/VulkanMod",
+    "sources": "https://github.com/SpinGiantCRM/VulkanModHDR"
+  ],
+    "fabricloader": ">=0.18.6",
+    "minecraft": ["26.1", "26.1.1", "26.1.2"]
     "sources": "https://github.com/SpinGiantCRM/VulkanModHDR"
   },
 
