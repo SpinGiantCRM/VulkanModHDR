@@ -9,14 +9,12 @@ import net.vulkanmod.config.Config;
 import net.vulkanmod.config.gui.*;
 import net.vulkanmod.config.video.*;
 import net.vulkanmod.render.chunk.WorldRenderer;
+import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
+import net.vulkanmod.vulkan.framebuffer.HdrToneMapper;
 import net.vulkanmod.render.chunk.build.light.LightMode;
 import net.vulkanmod.render.vertex.TerrainRenderType;
 import net.vulkanmod.vulkan.Renderer;
 import net.vulkanmod.vulkan.device.DeviceManager;
-import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
-import net.vulkanmod.vulkan.framebuffer.HdrToneMapper;
-import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
-import net.vulkanmod.vulkan.framebuffer.HdrToneMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -348,52 +346,10 @@ public abstract class Options {
                                 () -> config.indirectDraw)
                                 .setTooltip(v -> Component.translatable("vulkanmod.options.indirectDraw.tooltip"))
                                 .setImpact(PerformanceImpact.HIGH)
-                                () -> config.textureAnimations),
-                        new CyclingOption<>(Component.translatable("vulkanmod.options.hdrOutputMode"),
-                                HdrOutputMode.values(),
-                                value -> {
-                                    config.hdrOutputMode = value;
-                                    Renderer.scheduleSwapChainUpdate();
-                                },
-                                () -> config.hdrOutputMode),
-                        new RangeOption(Component.translatable("vulkanmod.options.hdrPaperWhiteNits"),
-                                80, 1000, 10,
-                                value -> config.paperWhiteNits = value,
-                                () -> (int) config.paperWhiteNits),
-                        new RangeOption(Component.translatable("vulkanmod.options.hdrPeakNits"),
-                                100, 4000, 50,
-                                value -> config.peakNits = value,
-                                () -> (int) config.peakNits),
-                        new RangeOption(Component.translatable("vulkanmod.options.hdrExposure"),
-                                10, 300, 1,
-                                value -> config.exposure = value / 100.0f,
-                                () -> Math.round(config.exposure * 100.0f))
-                                .setTranslator(v -> Component.literal(String.format("%.2f", v / 100.0f))),
-                        new RangeOption(Component.translatable("vulkanmod.options.hdrMinNits"),
-                                0, 100, 1,
-                                value -> config.minNits = value / 1000.0f,
-                                () -> Math.round(config.minNits * 1000.0f))
-                                .setTranslator(v -> Component.literal(String.format("%.3f", v / 1000.0f))),
-                        new RangeOption(Component.translatable("vulkanmod.options.hdrMaxCLL"),
-                                100, 4000, 50,
-                                value -> config.maxCLL = value,
-                                () -> (int) config.maxCLL),
-                        new RangeOption(Component.translatable("vulkanmod.options.hdrMaxFALL"),
-                                50, 2000, 25,
-                                value -> config.maxFALL = value,
-                                () -> (int) config.maxFALL),
-                        new RangeOption(Component.translatable("vulkanmod.options.hdrSaturation"),
-                                0, 200, 1,
-                                value -> config.saturation = value / 100.0f,
-                                () -> Math.round(config.saturation * 100.0f))
-                                .setTranslator(v -> Component.literal(String.format("%.2f", v / 100.0f))),
-                        new CyclingOption<>(Component.translatable("vulkanmod.options.hdrToneMapper"),
-                                HdrToneMapper.values(),
-                                value -> config.toneMapper = value,
-                                () -> config.toneMapper)
+                })
         };
     }
-}
+
     public static OptionBlock[] getOtherOpts() {
         return new OptionBlock[]{
                 new OptionBlock("", new Option<?>[]{

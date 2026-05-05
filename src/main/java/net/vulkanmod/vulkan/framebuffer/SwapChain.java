@@ -28,20 +28,6 @@ import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.EXTHdrMetadata.VK_EXT_HDR_METADATA_EXTENSION_NAME;
 import static org.lwjgl.vulkan.EXTSwapchainColorspace.VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME;
-    private HdrOutputMode activeHdrOutputMode = HdrOutputMode.OFF;
-    private DisplayOutputManager displayOutputManager;
-            HdrOutputMode requestedHdrMode = Initializer.CONFIG.hdrOutputMode == null ? HdrOutputMode.OFF : Initializer.CONFIG.hdrOutputMode;
-            boolean swapchainColorspaceSupported = DeviceManager.device.supportsExtension(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
-            boolean hdrMetadataSupported = DeviceManager.device.supportsExtension(VK_EXT_HDR_METADATA_EXTENSION_NAME);
-            SwapchainOutputState outputState = SwapchainFormatSelector.select(surfaceProperties.formats, requestedHdrMode, swapchainColorspaceSupported);
-            VkSurfaceFormatKHR surfaceFormat = outputState.format();
-            this.displayOutputManager = new DisplayOutputManager(hdrMetadataSupported);
-            this.activeHdrOutputMode = outputState.activeMode();
-            Initializer.LOGGER.info("HDR capability: VK_EXT_swapchain_colorspace={}, VK_EXT_hdr_metadata={}, requestedMode={}, selectedMode={}",
-                    swapchainColorspaceSupported, hdrMetadataSupported, requestedHdrMode, this.activeHdrOutputMode);
-            Initializer.LOGGER.info("HDR pipeline activeMode={}, toneMapper={}, surfaceFormat={}, colorSpace={}",
-                    this.activeHdrOutputMode, Initializer.CONFIG.toneMapper, surfaceFormat.format(), surfaceFormat.colorSpace());
-import static org.lwjgl.vulkan.EXTSwapchainColorspace.VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class SwapChain extends Framebuffer {
@@ -89,17 +75,7 @@ public class SwapChain extends Framebuffer {
             VkDevice device = Vulkan.getVkDevice();
             DeviceManager.SurfaceProperties surfaceProperties = DeviceManager.querySurfaceProperties(device.getPhysicalDevice(), stack);
 
-            HdrOutputMode requestedHdrMode = Initializer.CONFIG.hdrOutputMode == null ? HdrOutputMode.OFF : Initializer.CONFIG.hdrOutputMode;
-            boolean swapchainColorspaceSupported = DeviceManager.device.supportsExtension(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
-            boolean hdrMetadataSupported = DeviceManager.device.supportsExtension(VK_EXT_HDR_METADATA_EXTENSION_NAME);
-            SwapchainOutputState outputState = SwapchainFormatSelector.select(surfaceProperties.formats, requestedHdrMode, swapchainColorspaceSupported);
-            VkSurfaceFormatKHR surfaceFormat = outputState.format();
-            this.displayOutputManager = new DisplayOutputManager(hdrMetadataSupported);
-            this.activeHdrOutputMode = outputState.activeMode();
-            Initializer.LOGGER.info("HDR capability: VK_EXT_swapchain_colorspace={}, VK_EXT_hdr_metadata={}, requestedMode={}, selectedMode={}",
-                    swapchainColorspaceSupported, hdrMetadataSupported, requestedHdrMode, this.activeHdrOutputMode);
-            Initializer.LOGGER.info("HDR pipeline activeMode={}, toneMapper={}, surfaceFormat={}, colorSpace={}",
-                    this.activeHdrOutputMode, Initializer.CONFIG.toneMapper, surfaceFormat.format(), surfaceFormat.colorSpace());
+            VkSurfaceFormatKHR surfaceFormat = getFormat(surfaceProperties.formats);
             int presentMode = getPresentMode(surfaceProperties.presentModes);
             VkExtent2D extent = getExtent(surfaceProperties.capabilities);
 
@@ -148,9 +124,6 @@ public class SwapChain extends Framebuffer {
                 createInfo.imageSharingMode(VK_SHARING_MODE_EXCLUSIVE);
             }
 
-
-            this.displayOutputManager.onSwapchainCreated(this.swapChainId, outputState);
-            this.activeHdrOutputMode = this.displayOutputManager.getActiveMode();
             createInfo.preTransform(surfaceProperties.capabilities.currentTransform());
             createInfo.compositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR);
             createInfo.presentMode(presentMode);
@@ -189,9 +162,6 @@ public class SwapChain extends Framebuffer {
                 image.setSampler(samplerId);
                 this.swapChainImages.add(image);
             }
-
-            this.displayOutputManager.onSwapchainCreated(this.swapChainId, outputState);
-            this.activeHdrOutputMode = this.displayOutputManager.getActiveMode();
         }
 
         createDepthResources();
@@ -211,6 +181,25 @@ public class SwapChain extends Framebuffer {
                 VkFramebufferCreateInfo framebufferInfo = VkFramebufferCreateInfo.calloc(stack);
                 framebufferInfo.sType(VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO);
                 framebufferInfo.renderPass(renderPass.getId());
+                framebufferInfo.width(this.width);
+                framebufferInfo.height(this.height);
+                framebufferInfo.layers(1);
+                framebufferInfo.pAttachments(attachments);
+
+                if (vkCreateFramebuffer(Vulkan.getVkDevice(), framebufferInfo, null, pFramebuffer) != VK_SUCCESS) {
+                    throw new RuntimeException("Failed to create framebuffer");
+                }
+
+                framebuffers[i] = pFramebuffer.get(0);
+            }
+
+            return framebuffers;
+        }
+    }
+
+    private void createDepthResources() {
+        this.depthAttachment = VulkanImage.createDepthImage(depthFormat, this.width, this.height,
+                                                            VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                                                             false, false);
     }
 
@@ -218,6 +207,10 @@ public class SwapChain extends Framebuffer {
     protected long getFramebufferId(RenderPass renderPass) {
         long[] framebuffers = this.FBO_map.computeIfAbsent(renderPass.id, renderPass1 -> createFramebuffers(renderPass));
         return framebuffers[Renderer.getCurrentImage()];
+    }
+
+    public HdrOutputMode getActiveHdrOutputMode() {
+        return this.activeHdrOutputMode;
     }
 
     public void cleanUp() {
@@ -232,6 +225,25 @@ public class SwapChain extends Framebuffer {
         this.swapChainImages.forEach(image -> vkDestroyImageView(device, image.getImageView(), null));
 
         this.depthAttachment.free();
+    }
+
+    private VkSurfaceFormatKHR getFormat(VkSurfaceFormatKHR.Buffer availableFormats) {
+        List<VkSurfaceFormatKHR> list = availableFormats.stream().toList();
+
+        VkSurfaceFormatKHR format = list.get(0);
+
+        for (VkSurfaceFormatKHR availableFormat : list) {
+            if (availableFormat.format() == VK_FORMAT_R8G8B8A8_UNORM && availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+                return availableFormat;
+
+            if (availableFormat.format() == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                format = availableFormat;
+            }
+        }
+
+        if (format.format() == VK_FORMAT_B8G8R8A8_UNORM)
+            isBGRAformat = true;
+        return format;
     }
 
     private int getPresentMode(IntBuffer availablePresentModes) {
@@ -335,13 +347,5 @@ public class SwapChain extends Framebuffer {
 
     public int getImagesNum() {
         return this.swapChainImages.size();
-    }
-
-    public HdrOutputMode getActiveHdrOutputMode() {
-        return this.activeHdrOutputMode;
-    }
-
-    public HdrOutputMode getActiveHdrOutputMode() {
-        return this.activeHdrOutputMode;
     }
 }
