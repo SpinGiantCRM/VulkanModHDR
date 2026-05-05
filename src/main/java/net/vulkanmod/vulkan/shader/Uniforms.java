@@ -2,7 +2,10 @@ package net.vulkanmod.vulkan.shader;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import net.vulkanmod.Initializer;
+import net.vulkanmod.vulkan.Renderer;
 import net.vulkanmod.vulkan.VRenderSystem;
+import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
 import net.vulkanmod.vulkan.shader.layout.Uniform;
 import net.vulkanmod.vulkan.util.MappedBuffer;
 
@@ -41,6 +44,10 @@ public class Uniforms {
         vec1f_uniformMap.put("FogCloudsEnd", () -> VRenderSystem.getFogData().cloudEnd);
         vec1f_uniformMap.put("LineWidth", RenderSystem::getShaderLineWidth);
         vec1f_uniformMap.put("AlphaCutout", () -> VRenderSystem.alphaCutout);
+        vec1f_uniformMap.put("HdrPaperWhiteNits", () -> Initializer.CONFIG.paperWhiteNits);
+        vec1f_uniformMap.put("HdrPeakNits", () -> Initializer.CONFIG.peakNits);
+        vec1f_uniformMap.put("HdrExposure", () -> Initializer.CONFIG.exposure);
+        vec1f_uniformMap.put("HdrOutputMode", Uniforms::getHdrOutputModeValue);
 
         //Vec2
         vec2f_uniformMap.put("ScreenSize", VRenderSystem::getScreenSize);
@@ -55,6 +62,20 @@ public class Uniforms {
         vec4f_uniformMap.put("ColorModulator", VRenderSystem::getShaderColor);
         vec4f_uniformMap.put("FogColor", VRenderSystem::getShaderFogColor);
 
+    }
+
+    private static float getHdrOutputModeValue() {
+        Renderer renderer = Renderer.getInstance();
+        if (renderer == null || renderer.getSwapChain() == null) {
+            return 0.0f;
+        }
+
+        HdrOutputMode mode = renderer.getSwapChain().getActiveHdrOutputMode();
+        return switch (mode) {
+            case HDR10_PQ -> 1.0f;
+            case SCRGB_LINEAR -> 2.0f;
+            case OFF, AUTO -> 0.0f;
+        };
     }
 
     public static Supplier<MappedBuffer> getUniformSupplier(String type, String name) {
