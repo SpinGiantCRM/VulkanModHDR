@@ -6,42 +6,6 @@ import net.vulkanmod.config.video.VideoModeManager;
 import net.vulkanmod.config.video.VideoModeSet;
 import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
 import net.vulkanmod.vulkan.framebuffer.HdrToneMapper;
-    public HdrOutputMode hdrOutputMode = HdrOutputMode.OFF;
-    public float paperWhiteNits = 200.0f;
-    public float peakNits = 1000.0f;
-    public float exposure = 1.0f;
-    public float minNits = 0.005f;
-    public float maxCLL = 1000.0f;
-    public float maxFALL = 400.0f;
-    public float saturation = 1.0f;
-    public HdrToneMapper toneMapper = HdrToneMapper.REINHARD;
-
-    public void clampHdrSettings() {
-        this.paperWhiteNits = clamp(this.paperWhiteNits, 80.0f, 1000.0f);
-        this.peakNits = clamp(this.peakNits, 100.0f, 10000.0f);
-        this.exposure = clamp(this.exposure, 0.1f, 10.0f);
-        this.minNits = clamp(this.minNits, 0.0f, 1.0f);
-        this.maxCLL = clamp(this.maxCLL, 100.0f, 10000.0f);
-        this.maxFALL = clamp(this.maxFALL, 50.0f, this.maxCLL);
-        this.saturation = clamp(this.saturation, 0.0f, 2.0f);
-        if (this.toneMapper == null) this.toneMapper = HdrToneMapper.REINHARD;
-        if (this.hdrOutputMode == null) this.hdrOutputMode = HdrOutputMode.OFF;
-    }
-
-    private static float clamp(float value, float min, float max) {
-        return Math.max(min, Math.min(max, value));
-    }
-        config.clampHdrSettings();
-        config.write();
-
-import net.vulkanmod.vulkan.framebuffer.HdrToneMapper;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
 
 public class Config {
     public VideoModeSet.VideoMode videoMode = VideoModeManager.getFirstAvailable().getVideoMode();

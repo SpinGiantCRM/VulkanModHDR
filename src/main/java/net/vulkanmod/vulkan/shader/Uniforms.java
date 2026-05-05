@@ -1,40 +1,5 @@
 package net.vulkanmod.vulkan.shader;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
-import net.vulkanmod.Initializer;
-import net.vulkanmod.vulkan.Renderer;
-import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
-import net.vulkanmod.vulkan.framebuffer.HdrToneMapper;
-        vec1f_uniformMap.put("HdrPaperWhiteNits", () -> Initializer.CONFIG.paperWhiteNits);
-        vec1f_uniformMap.put("HdrPeakNits", () -> Initializer.CONFIG.peakNits);
-        vec1f_uniformMap.put("HdrExposure", () -> Initializer.CONFIG.exposure);
-        vec1f_uniformMap.put("HdrSaturation", () -> Initializer.CONFIG.saturation);
-        vec1f_uniformMap.put("HdrToneMapper", Uniforms::getHdrToneMapperValue);
-        vec1f_uniformMap.put("HdrOutputMode", Uniforms::getHdrOutputModeValue);
-    private static float getHdrToneMapperValue() {
-        HdrToneMapper mapper = Initializer.CONFIG.toneMapper == null ? HdrToneMapper.REINHARD : Initializer.CONFIG.toneMapper;
-        return switch (mapper) {
-            case REINHARD -> 0.0f;
-            case ACES -> 1.0f;
-            case LINEAR_CLAMP -> 2.0f;
-        };
-    }
-
-    private static float getHdrOutputModeValue() {
-        Renderer renderer = Renderer.getInstance();
-        if (renderer == null || renderer.getSwapChain() == null) {
-            return 0.0f;
-        }
-
-        HdrOutputMode mode = renderer.getSwapChain().getActiveHdrOutputMode();
-        return switch (mode) {
-            case HDR10_PQ -> 1.0f;
-            case SCRGB_LINEAR -> 2.0f;
-            case OFF, AUTO -> 0.0f;
-        };
-    }
-
 import net.vulkanmod.Initializer;
 import net.vulkanmod.vulkan.Renderer;
 import net.vulkanmod.vulkan.VRenderSystem;
