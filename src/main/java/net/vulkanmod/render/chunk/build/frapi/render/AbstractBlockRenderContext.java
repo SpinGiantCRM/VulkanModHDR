@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.client.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.client.renderer.v1.model.ModelHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -224,9 +224,9 @@ public abstract class AbstractBlockRenderContext extends AbstractRenderContext {
 	}
 
 	private int getBlockColor(BlockAndTintGetter region, int colorIndex) {
-		BlockColor blockColor = this.blockColorRegistry.getBlockColor(this.blockState.getBlock());
+		BlockTintSource blockColor = this.blockColorRegistry.getBlockColor(this.blockState.getBlock());
 
-		int color = blockColor != null ? blockColor.getColor(blockState, region, blockPos, colorIndex) : -1;
+		int color = blockColor != null ? blockColor.colorInWorld(blockState, region, blockPos) : -1;
 		return 0xFF000000 | color;
 	}
 
