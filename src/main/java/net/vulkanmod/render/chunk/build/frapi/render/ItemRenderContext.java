@@ -16,7 +16,7 @@ import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.vulkanmod.mixin.render.frapi.ItemRendererAccessor;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.Brightness;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.Sheets;
@@ -107,7 +107,7 @@ public class ItemRenderContext extends AbstractRenderContext {
 	private void shadeQuad(MutableQuadViewImpl quad, boolean emissive) {
 		if (emissive) {
 			for (int i = 0; i < 4; i++) {
-				quad.lightmap(i, LightTexture.FULL_BRIGHT);
+				quad.lightmap(i, Brightness.FULL_BRIGHT.pack());
 			}
 		} else {
 			final int lightmap = this.lightmap;

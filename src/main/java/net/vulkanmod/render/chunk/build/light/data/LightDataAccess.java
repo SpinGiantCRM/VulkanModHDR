@@ -1,7 +1,7 @@
 package net.vulkanmod.render.chunk.build.light.data;
 
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.Brightness;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.LightLayer;
@@ -109,8 +109,8 @@ public abstract class LightDataAccess {
             }
             else {
                 int light = LevelRenderer.getLightColor(LevelRenderer.BrightnessGetter.DEFAULT, region, state, pos);
-                bl = LightTexture.block(light);
-                sl = LightTexture.sky(light);
+                bl = Brightness.unpack(light).block();
+                sl = Brightness.unpack(light).sky();
             }
         }
 
@@ -211,12 +211,12 @@ public abstract class LightDataAccess {
      */
     public static int getLightmap(int word) {
 //        return LightTexture.pack(Math.max(unpackBL(word), unpackLU(word)), unpackSL(word));
-        return LightTexture.pack(unpackBL(word), unpackSL(word));
+        return new Brightness(unpackBL(word), unpackSL(word)).pack();
     }
 
     public static int getEmissiveLightmap(int word) {
         if (unpackEM(word)) {
-            return LightTexture.FULL_BRIGHT;
+            return Brightness.FULL_BRIGHT.pack();
         } else {
             return getLightmap(word);
         }

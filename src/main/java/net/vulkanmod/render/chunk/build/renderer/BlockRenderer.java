@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.ShadeMode;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
@@ -58,7 +57,7 @@ public class BlockRenderer extends AbstractBlockRenderContext {
         this.blockState = blockState;
         this.random.setSeed(blockState.getSeed(blockPos));
 
-        TerrainRenderType renderType = TerrainRenderType.get(ItemBlockRenderTypes.getChunkRenderType(blockState));
+        TerrainRenderType renderType = TerrainRenderType.get(net.minecraft.client.renderer.chunk.ChunkSectionLayer.SOLID);
         renderType = TerrainRenderType.getRemapped(renderType);
         this.renderType = renderType;
         this.terrainBuilder = this.resources.builderPack.builder(renderType);

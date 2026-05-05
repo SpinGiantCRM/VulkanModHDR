@@ -19,7 +19,7 @@ package net.vulkanmod.render.chunk.build.frapi.mesh;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.ShadeMode;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.Brightness;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -290,7 +290,7 @@ public abstract class MutableQuadViewImpl extends QuadViewImpl implements QuadEm
 
 		if (lightEmission > 0) {
 			for (int i = 0; i < 4; i++) {
-				lightmap(i, LightTexture.lightCoordsWithEmission(lightmap(i), lightEmission));
+				lightmap(i, new Brightness(Math.max(Brightness.unpack(lightmap(i)).block(), lightEmission), Brightness.unpack(lightmap(i)).sky()).pack());
 			}
 		}
 

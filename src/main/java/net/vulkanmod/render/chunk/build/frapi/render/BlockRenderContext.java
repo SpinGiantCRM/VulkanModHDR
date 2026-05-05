@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.ShadeMode;
 import net.fabricmc.fabric.api.client.renderer.v1.render.BlockVertexConsumerProvider;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
@@ -55,7 +54,7 @@ public class BlockRenderContext extends AbstractBlockRenderContext {
 
 		this.blockPos = pos;
 		this.vertexConsumers = buffers;
-        this.defaultRenderLayer = ItemBlockRenderTypes.getChunkRenderType(state);
+        this.defaultRenderLayer = net.minecraft.client.renderer.chunk.ChunkSectionLayer.SOLID;
 		this.matrices = matrixStack.last();
 		this.overlay = overlay;
 		this.random.setSeed(seed);

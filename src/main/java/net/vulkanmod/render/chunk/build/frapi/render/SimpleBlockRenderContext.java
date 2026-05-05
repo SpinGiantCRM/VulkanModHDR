@@ -18,8 +18,7 @@ package net.vulkanmod.render.chunk.build.frapi.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.renderer.v1.render.BlockVertexConsumerProvider;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.Brightness;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
@@ -84,7 +83,7 @@ public class SimpleBlockRenderContext extends AbstractRenderContext {
     private void shadeQuad(MutableQuadViewImpl quad, boolean emissive) {
         if (emissive) {
             for (int i = 0; i < 4; i++) {
-                quad.lightmap(i, LightTexture.FULL_BRIGHT);
+                quad.lightmap(i, Brightness.FULL_BRIGHT.pack());
             }
         } else {
             final int light = this.light;
@@ -100,7 +99,7 @@ public class SimpleBlockRenderContext extends AbstractRenderContext {
         this.overlay = overlay;
 
         this.vertexConsumers = vertexConsumers;
-        this.defaultRenderLayer = ItemBlockRenderTypes.getChunkRenderType(state);
+        this.defaultRenderLayer = net.minecraft.client.renderer.chunk.ChunkSectionLayer.SOLID;
         this.red = Mth.clamp(red, 0, 1);
         this.green = Mth.clamp(green, 0, 1);
         this.blue = Mth.clamp(blue, 0, 1);
