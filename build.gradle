@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.15.5'
+	id 'net.fabricmc.fabric-loom' version '1.15.5'
 	id 'maven-publish'
 }
 
@@ -17,8 +17,7 @@ loom {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API modules pinned to upstream 26.1.x 0.6.5 jar line.
 	[
@@ -32,7 +31,7 @@ dependencies {
 		"net.fabricmc.fabric-api:fabric-resource-loader-v1:2.0.9+d871b99eb3",
 		"net.fabricmc.fabric-api:fabric-transitive-access-wideners-v1:8.0.11+d871b99eb3"
 	].each { module ->
-		modImplementation(module)
+		implementation(module)
 		include(module)
 	}
 }
