@@ -1,7 +1,7 @@
 package net.vulkanmod.mixin.render.vertex;
 
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.Vec3i;
 import net.vulkanmod.interfaces.ExtendedVertexBuilder;
 import net.vulkanmod.mixin.matrix.PoseAccessor;

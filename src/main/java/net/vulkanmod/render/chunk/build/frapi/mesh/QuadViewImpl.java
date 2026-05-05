@@ -32,7 +32,7 @@ import static net.vulkanmod.render.chunk.build.frapi.mesh.EncodingFormat.VERTEX_
 import static net.vulkanmod.render.chunk.build.frapi.mesh.EncodingFormat.VERTEX_Y;
 import static net.vulkanmod.render.chunk.build.frapi.mesh.EncodingFormat.VERTEX_Z;
 
-import net.fabricmc.fabric.api.renderer.v1.mesh.ShadeMode;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.ShadeMode;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
@@ -43,7 +43,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadView;
 import net.vulkanmod.render.chunk.build.frapi.helper.ColorHelper;
 import net.vulkanmod.render.chunk.build.frapi.helper.GeometryHelper;
 import net.vulkanmod.render.chunk.build.frapi.helper.NormalHelper;

@@ -7,6 +7,12 @@ import net.vulkanmod.config.video.VideoModeSet;
 import net.vulkanmod.vulkan.framebuffer.HdrOutputMode;
 import net.vulkanmod.vulkan.framebuffer.HdrToneMapper;
 
+import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+
 public class Config {
     public VideoModeSet.VideoMode videoMode = VideoModeManager.getFirstAvailable().getVideoMode();
     public int windowMode = 0;

@@ -40,7 +40,7 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 @SuppressWarnings("NullableProblems")
-public class VkGpuDevice implements GpuDevice {
+public class VkGpuDevice extends GpuDevice {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final VkCommandEncoder encoder;
@@ -55,6 +55,132 @@ public class VkGpuDevice implements GpuDevice {
     private final Map<ShaderCompilationKey, String> shaderSrcCache = new HashMap<>();
 
     public VkGpuDevice(long l, int i, boolean bl, BiFunction<ResourceLocation, ShaderType, String> shaderSource, boolean bl2) {
+        super(new com.mojang.blaze3d.systems.GpuDeviceBackend() {
+            @Override
+            public com.mojang.blaze3d.systems.CommandEncoderBackend createCommandEncoder() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public com.mojang.blaze3d.textures.GpuSampler createSampler(com.mojang.blaze3d.textures.AddressMode addressMode, com.mojang.blaze3d.textures.AddressMode addressMode2, com.mojang.blaze3d.textures.FilterMode filterMode, com.mojang.blaze3d.textures.FilterMode filterMode2, int i, java.util.OptionalDouble optionalDouble) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public GpuTexture createTexture(Supplier<String> supplier, int usage, TextureFormat textureFormat, int width, int height, int layers, int mipLevels) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public GpuTexture createTexture(String string, int usage, TextureFormat textureFormat, int width, int height, int layers, int mipLevels) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public GpuTextureView createTextureView(GpuTexture gpuTexture) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public GpuTextureView createTextureView(GpuTexture gpuTexture, int startLevel, int levels) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public GpuBuffer createBuffer(Supplier<String> supplier, int usage, long size) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public GpuBuffer createBuffer(Supplier<String> supplier, int usage, ByteBuffer byteBuffer) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getImplementationInformation() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<String> getLastDebugMessages() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isDebuggingEnabled() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getVendor() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getBackendName() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getVersion() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getRenderer() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public int getMaxTextureSize() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public int getUniformOffsetAlignment() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public CompiledRenderPipeline precompilePipeline(RenderPipeline renderPipeline, com.mojang.blaze3d.shaders.ShaderSource shaderSource) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void clearPipelineCache() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<String> getEnabledExtensions() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public int getMaxSupportedAnisotropy() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void close() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setVsync(boolean bl) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void presentFrame() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isZZeroToOne() {
+                throw new UnsupportedOperationException();
+            }
+        });
         this.debugLabels = VkDebugLabel.create(bl2, this.enabledExtensions);
         this.maxSupportedTextureSize = VRenderSystem.maxSupportedTextureSize();
         this.uniformOffsetAlignment = (int) DeviceManager.deviceProperties.limits().minUniformBufferOffsetAlignment();
@@ -146,11 +272,11 @@ public class VkGpuDevice implements GpuDevice {
     }
 
     @Override
-    public GpuBuffer createBuffer(@Nullable Supplier<String> supplier, int usage, int size) {
-        if (size <= 0) {
+    public GpuBuffer createBuffer(@Nullable Supplier<String> supplier, int usage, long size) {
+        if (size <= 0L || size > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Buffer size must be greater than zero");
         } else {
-            return new VkGpuBuffer(this.debugLabels, supplier, usage, size);
+            return new VkGpuBuffer(this.debugLabels, supplier, usage, (int) size);
         }
     }
 
