@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Optional mod version override (falls back to gradle.properties when omitted)'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -24,10 +29,36 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Resolve build version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          VERSION=""
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            VERSION="${TAG#v}"
+          elif [ -n "${{ github.event.inputs.version || '' }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="$(sed -n 's/^[[:space:]]*mod_version[[:space:]]*=[[:space:]]*//p' gradle.properties | head -n1)"
+          fi
+
+          if [ -z "${VERSION}" ]; then
+            echo "Failed to resolve VERSION." >&2
+            exit 1
+          fi
+
+          echo "Resolved VERSION=${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
       - name: Build
         run: |
           chmod +x ./gradlew
-          ./gradlew build
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Building with VERSION=${VERSION}"
+          ./gradlew build -Pmod_version="$VERSION"
 
       - name: Collect release files
         id: collect
@@ -54,15 +85,15 @@ jobs:
             exit 1
           fi
 
-          sources_jars=(build/libs/*-sources.jar)
-          files=("${release_jars[@]}")
-          if [ ${#sources_jars[@]} -gt 0 ]; then
-            files+=("${sources_jars[0]}")
+          if [ ${#release_jars[@]} -gt 1 ]; then
+            echo "Expected exactly one main release jar, found ${#release_jars[@]}:" >&2
+            printf ' - %s\n' "${release_jars[@]}" >&2
+            exit 1
           fi
 
           {
             echo 'files<<EOF'
-            printf '%s\n' "${files[@]}"
+            printf '%s\n' "${release_jars[0]}"
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
