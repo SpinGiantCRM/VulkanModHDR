@@ -1,7 +1,7 @@
 package net.vulkanmod.mixin.render.color;
 
-import net.minecraft.client.color.block.BlockTintSource;
-import net.minecraft.client.color.block.BlockTintSources;
+import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.world.level.block.Block;
 import net.vulkanmod.interfaces.color.BlockColorsExtended;
 import net.vulkanmod.render.chunk.build.color.BlockColorRegistry;
@@ -18,7 +18,7 @@ public class BlockColorsM implements BlockColorsExtended {
 	private BlockColorRegistry colorResolvers = new BlockColorRegistry();
 
 	@Inject(method = "register", at = @At("RETURN"))
-	private void onRegister(BlockTintSource blockColor, Block[] blocks, CallbackInfo ci) {
+	private void onRegister(BlockColor blockColor, Block[] blocks, CallbackInfo ci) {
 		this.colorResolvers.register(blockColor, blocks);
 	}
 
