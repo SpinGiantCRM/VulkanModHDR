@@ -3,8 +3,6 @@ package net.vulkanmod.mixin.render.frapi;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.fabricmc.fabric.api.client.renderer.v1.render.FabricBlockModelRenderer;
-import net.fabricmc.fabric.api.client.renderer.v1.render.RenderLayerHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
@@ -37,6 +35,6 @@ abstract class BlockRenderManagerM {
 
     @Redirect(method = "renderSingleBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/block/ModelBlockRenderer;renderModel(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/renderer/block/model/BlockStateModel;FFFII)V"))
     private void renderProxy(PoseStack.Pose entry, VertexConsumer vertexConsumer, BlockStateModel model, float red, float green, float blue, int light, int overlay, BlockState state, PoseStack matrices, MultiBufferSource vertexConsumers, int light1, int overlay1) {
-        FabricBlockModelRenderer.render(entry, RenderLayerHelper.entityDelegate(vertexConsumers), model, red, green, blue, light, overlay, EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, state);
+        this.modelRenderer.renderModel(entry, vertexConsumer, model, red, green, blue, light, overlay);
     }
 }

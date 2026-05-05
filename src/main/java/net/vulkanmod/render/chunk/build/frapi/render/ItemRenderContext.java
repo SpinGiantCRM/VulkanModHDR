@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.MeshView;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.client.renderer.v1.render.FabricLayerRenderState;
-import net.fabricmc.fabric.api.client.renderer.v1.render.RenderLayerHelper;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
@@ -125,7 +124,7 @@ public class ItemRenderContext extends AbstractRenderContext {
         if (quadRenderLayer == null) {
             layer = defaultLayer;
         } else {
-            layer = RenderLayerHelper.getEntityBlockLayer(quadRenderLayer);
+            layer = net.minecraft.client.renderer.chunk.ChunkSectionLayer.BUFFER_MAP.get(quadRenderLayer);
         }
 
         if (ignoreQuadGlint || quadGlint == null) {

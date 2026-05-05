@@ -17,7 +17,7 @@ package net.vulkanmod.render.chunk.build.frapi.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.fabricmc.fabric.api.client.renderer.v1.render.BlockVertexConsumerProvider;
+import java.util.function.Function;
 import net.minecraft.util.Brightness;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -38,7 +38,7 @@ public class SimpleBlockRenderContext extends AbstractRenderContext {
 
     private final RandomSource random = RandomSource.create();
 
-    private BlockVertexConsumerProvider vertexConsumers;
+    private Function<ChunkSectionLayer, VertexConsumer> vertexConsumers;
     private ChunkSectionLayer defaultRenderLayer;
     private float red;
     private float green;
@@ -94,7 +94,7 @@ public class SimpleBlockRenderContext extends AbstractRenderContext {
         }
     }
 
-    public void bufferModel(PoseStack.Pose entry, BlockVertexConsumerProvider vertexConsumers, BlockStateModel model, float red, float green, float blue, int light, int overlay, BlockAndTintGetter blockView, BlockPos pos, BlockState state) {
+    public void bufferModel(PoseStack.Pose entry, Function<ChunkSectionLayer, VertexConsumer> vertexConsumers, BlockStateModel model, float red, float green, float blue, int light, int overlay, BlockAndTintGetter blockView, BlockPos pos, BlockState state) {
         matrices = entry;
         this.overlay = overlay;
 
