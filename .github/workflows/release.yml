@@ -54,11 +54,26 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Build
+        shell: bash
         run: |
+          set -euo pipefail
           chmod +x ./gradlew
           VERSION="${{ steps.version.outputs.version }}"
           echo "Building with VERSION=${VERSION}"
-          ./gradlew build -Pmod_version="$VERSION"
+
+          max_attempts=3
+          attempt=1
+          until ./gradlew build -Pmod_version="$VERSION"; do
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "Gradle build failed after ${attempt} attempts." >&2
+              exit 1
+            fi
+
+            sleep_seconds=$((attempt * 15))
+            echo "Gradle build failed (attempt ${attempt}/${max_attempts}). Retrying in ${sleep_seconds}s..."
+            sleep "$sleep_seconds"
+            attempt=$((attempt + 1))
+          done
 
       - name: Collect release files
         id: collect
