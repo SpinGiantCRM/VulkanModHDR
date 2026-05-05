@@ -1,26 +1,3 @@
-VulkanModHDR Fork Licensing Notice
-=================================
-
-This repository is a refactor fork of VulkanMod.
-
-1. Upstream ownership preserved
-   - Existing VulkanMod code remains owned by its original authors/contributors.
-   - Nothing in this repository reassigns ownership of upstream work.
-
-2. Scope of this fork's claim
-   - Only the small, original refactor changes authored in this fork are claimed by this fork's maintainer(s).
-   - Those changes are intentionally kept compatible with upstreaming.
-
-3. License continuity
-   - The upstream project license terms continue to apply to upstream-derived files.
-   - Fork-authored refactor deltas are provided under the same license family/compatibility expectations to avoid blocking upstream adoption.
-
-4. Practical rule for users and redistributors
-   - Preserve original attribution and notices.
-   - Keep this notice and the full license text together when redistributing this fork.
-
-Full upstream license text follows:
-
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
