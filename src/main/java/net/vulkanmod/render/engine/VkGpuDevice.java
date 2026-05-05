@@ -15,7 +15,7 @@ import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.ShaderDefines;
-import net.minecraft.class_2960;
+import net.minecraft.resources.ResourceLocation;
 import net.vulkanmod.Initializer;
 import net.vulkanmod.gl.VkGlTexture;
 import net.vulkanmod.interfaces.shader.ExtendedRenderPipeline;
@@ -47,14 +47,14 @@ public class VkGpuDevice extends GpuDevice {
     private final VkDebugLabel debugLabels;
     private final int maxSupportedTextureSize;
     private final int uniformOffsetAlignment;
-    private final BiFunction<class_2960, ShaderType, String> defaultShaderSource;
+    private final BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource;
     private final Map<RenderPipeline, GlRenderPipeline> pipelineCache = new IdentityHashMap<>();
     private final Map<ShaderCompilationKey, GlShaderModule> shaderCache = new HashMap<>();
     private final Set<String> enabledExtensions = new HashSet<>();
 
     private final Map<ShaderCompilationKey, String> shaderSrcCache = new HashMap<>();
 
-    public VkGpuDevice(long l, int i, boolean bl, BiFunction<class_2960, ShaderType, String> shaderSource, boolean bl2) {
+    public VkGpuDevice(long l, int i, boolean bl, BiFunction<ResourceLocation, ShaderType, String> shaderSource, boolean bl2) {
         super(new com.mojang.blaze3d.systems.GpuDeviceBackend() {
             @Override
             public com.mojang.blaze3d.systems.CommandEncoderBackend createCommandEncoder() {
@@ -382,13 +382,13 @@ public class VkGpuDevice extends GpuDevice {
     }
 
     protected GlShaderModule getOrCompileShader(
-            class_2960 resourceLocation, ShaderType shaderType, ShaderDefines shaderDefines, BiFunction<class_2960, ShaderType, String> biFunction
+            ResourceLocation resourceLocation, ShaderType shaderType, ShaderDefines shaderDefines, BiFunction<ResourceLocation, ShaderType, String> biFunction
     ) {
         ShaderCompilationKey shaderCompilationKey = new ShaderCompilationKey(resourceLocation, shaderType, shaderDefines);
         return this.shaderCache.computeIfAbsent(shaderCompilationKey, shaderCompilationKey2 -> this.compileShader(shaderCompilationKey, biFunction));
     }
 
-    protected String getCachedShaderSrc(class_2960 resourceLocation, ShaderType shaderType, ShaderDefines shaderDefines, BiFunction<class_2960, ShaderType, String> shaderSourceGetter) {
+    protected String getCachedShaderSrc(ResourceLocation resourceLocation, ShaderType shaderType, ShaderDefines shaderDefines, BiFunction<ResourceLocation, ShaderType, String> shaderSourceGetter) {
         ShaderCompilationKey shaderCompilationKey = new ShaderCompilationKey(resourceLocation, shaderType, shaderDefines);
 
         return this.shaderSrcCache.computeIfAbsent(shaderCompilationKey, compilationKey -> {
@@ -413,7 +413,7 @@ public class VkGpuDevice extends GpuDevice {
         });
     }
 
-    public CompiledRenderPipeline precompilePipeline(RenderPipeline renderPipeline, @Nullable BiFunction<class_2960, ShaderType, String> shaderSourceGetter) {
+    public CompiledRenderPipeline precompilePipeline(RenderPipeline renderPipeline, @Nullable BiFunction<ResourceLocation, ShaderType, String> shaderSourceGetter) {
         shaderSourceGetter = shaderSourceGetter == null ? this.defaultShaderSource : shaderSourceGetter;
         compilePipeline(renderPipeline, shaderSourceGetter);
 
@@ -424,7 +424,7 @@ public class VkGpuDevice extends GpuDevice {
         this.compilePipeline(renderPipeline, this.defaultShaderSource);
     }
 
-    private GlShaderModule compileShader(ShaderCompilationKey shaderCompilationKey, BiFunction<class_2960, ShaderType, String> biFunction) {
+    private GlShaderModule compileShader(ShaderCompilationKey shaderCompilationKey, BiFunction<ResourceLocation, ShaderType, String> biFunction) {
         String string = biFunction.apply(shaderCompilationKey.id, shaderCompilationKey.type);
         if (string == null) {
             LOGGER.error("Couldn't find source for {} shader ({})", shaderCompilationKey.type, shaderCompilationKey.id);
@@ -446,7 +446,7 @@ public class VkGpuDevice extends GpuDevice {
         }
     }
 
-    private void compilePipeline(RenderPipeline renderPipeline, BiFunction<class_2960, ShaderType, String> shaderSrcGetter) {
+    private void compilePipeline(RenderPipeline renderPipeline, BiFunction<ResourceLocation, ShaderType, String> shaderSrcGetter) {
         String locationPath = renderPipeline.getLocation().getPath();
 
         String configName;
@@ -460,8 +460,8 @@ public class VkGpuDevice extends GpuDevice {
         GraphicsPipeline pipeline;
         ExtendedRenderPipeline extPipeline = ExtendedRenderPipeline.of(renderPipeline);
 
-        class_2960 vertexShaderLocation = renderPipeline.getVertexShader();
-        class_2960 fragmentShaderLocation = renderPipeline.getFragmentShader();
+        ResourceLocation vertexShaderLocation = renderPipeline.getVertexShader();
+        ResourceLocation fragmentShaderLocation = renderPipeline.getFragmentShader();
 
         ShaderDefines shaderDefines = renderPipeline.getShaderDefines();
 
@@ -507,7 +507,7 @@ public class VkGpuDevice extends GpuDevice {
     }
 
     @Environment(EnvType.CLIENT)
-    record ShaderCompilationKey(class_2960 id, ShaderType type, ShaderDefines defines) {
+    record ShaderCompilationKey(ResourceLocation id, ShaderType type, ShaderDefines defines) {
 
         public String toString() {
             String string = this.id + " (" + this.type + ")";

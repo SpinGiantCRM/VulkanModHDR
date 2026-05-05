@@ -2,7 +2,7 @@ package net.vulkanmod.mixin.debug;
 
 import net.minecraft.client.gui.components.debug.DebugEntryMemory;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
-import net.minecraft.class_2960;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.vulkanmod.vulkan.memory.MemoryManager;
@@ -19,7 +19,7 @@ import java.util.Locale;
 @Mixin(DebugEntryMemory.class)
 public abstract class DebugEntryMemoryM {
 
-    @Shadow @Final private static class_2960 GROUP;
+    @Shadow @Final private static ResourceLocation GROUP;
 
     @Shadow
     protected static long bytesToMegabytes(long l) {

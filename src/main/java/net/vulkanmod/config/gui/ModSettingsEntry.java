@@ -1,7 +1,7 @@
 package net.vulkanmod.config.gui;
 
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.class_2960;
+import net.minecraft.resources.ResourceLocation;
 import net.vulkanmod.config.option.OptionPage;
 
 import java.util.List;
@@ -9,14 +9,14 @@ import java.util.function.Supplier;
 
 public class ModSettingsEntry {
     public final FormattedText modName;
-    public final Supplier<class_2960> iconSupplier;
+    public final Supplier<ResourceLocation> iconSupplier;
     private final Supplier<List<OptionPage>> optionPageSupplier;
     private final Runnable onApply;
 
-    private class_2960 icon;
+    private ResourceLocation icon;
     List<OptionPage> pages;
 
-    public ModSettingsEntry(FormattedText modName, Supplier<class_2960> iconSupplier, Supplier<List<OptionPage>> optionPageSupplier, Runnable onApply) {
+    public ModSettingsEntry(FormattedText modName, Supplier<ResourceLocation> iconSupplier, Supplier<List<OptionPage>> optionPageSupplier, Runnable onApply) {
         this.modName = modName;
         this.iconSupplier = iconSupplier;
         this.optionPageSupplier = optionPageSupplier;
@@ -32,7 +32,7 @@ public class ModSettingsEntry {
         return pages;
     }
 
-    public class_2960 getIcon() {
+    public ResourceLocation getIcon() {
         if (this.icon == null) {
             this.icon = this.iconSupplier.get();
         }
