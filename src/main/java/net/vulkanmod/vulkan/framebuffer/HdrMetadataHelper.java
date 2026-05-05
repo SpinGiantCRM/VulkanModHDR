@@ -18,6 +18,7 @@ final class HdrMetadataHelper {
         }
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
+            Initializer.CONFIG.clampHdrSettings();
             VkHdrMetadataEXT.Buffer metadataBuffer = VkHdrMetadataEXT.calloc(1, stack);
             VkHdrMetadataEXT metadata = metadataBuffer.get(0);
             metadata.sType(EXTHdrMetadata.VK_STRUCTURE_TYPE_HDR_METADATA_EXT);
@@ -27,13 +28,14 @@ final class HdrMetadataHelper {
             setColor(metadata.displayPrimaryBlue(), 0.150f, 0.060f);
             setColor(metadata.whitePoint(), 0.3127f, 0.3290f);
 
-            metadata.maxLuminance(1000.0f);
-            metadata.minLuminance(0.001f);
-            metadata.maxContentLightLevel(1000.0f);
-            metadata.maxFrameAverageLightLevel(400.0f);
+            metadata.maxLuminance(Initializer.CONFIG.peakNits);
+            metadata.minLuminance(Initializer.CONFIG.minNits);
+            metadata.maxContentLightLevel(Initializer.CONFIG.maxCLL);
+            metadata.maxFrameAverageLightLevel(Initializer.CONFIG.maxFALL);
 
             vkSetHdrMetadataEXT(net.vulkanmod.vulkan.Vulkan.getVkDevice(), stack.longs(swapchainId), metadataBuffer);
-            Initializer.LOGGER.info("Applied HDR10 metadata to swapchain.");
+            Initializer.LOGGER.info("Applied HDR10 metadata: maxLum={} minLum={} maxCLL={} maxFALL={}",
+                    Initializer.CONFIG.peakNits, Initializer.CONFIG.minNits, Initializer.CONFIG.maxCLL, Initializer.CONFIG.maxFALL);
         }
     }
 
