@@ -23,7 +23,7 @@ This repository distributes and modifies code from VulkanMod. As such:
 - Refactor contributions in this fork are licensed compatibly so they can be upstreamed.
 - You must preserve attribution and license notices when redistributing.
 
-See the [LICENSE](./LICENSE) file for full terms and the fork-specific licensing notice.
+See [LICENSE](./LICENSE) for the unmodified LGPL-3.0 text and [NOTICE.md](./NOTICE.md) for fork-specific attribution details.
 
 ## Upstream-First Policy
 

@@ -3,14 +3,16 @@
   "id": "vulkanmod",
   "version": "${version}",
 
-  "name": "VulkanMod",
+  "name": "VulkanMod HDR Fork",
   "description": "Bring Vulkan to Minecraft!",
   "authors": [
-    "Collateral"
+    "Collateral",
+    "VulkanMod contributors",
+    "SpinGiantCRM - HDR fork changes"
   ],
   "contact": {
-    "homepage": "",
-    "sources": "https://github.com/xCollateral/VulkanMod"
+    "homepage": "https://github.com/xCollateral/VulkanMod",
+    "sources": "https://github.com/SpinGiantCRM/VulkanModHDR"
   },
 
   "icon": "assets/vulkanmod/vlogo.png",
