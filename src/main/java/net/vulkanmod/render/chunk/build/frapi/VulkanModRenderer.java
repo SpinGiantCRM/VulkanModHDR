@@ -3,13 +3,12 @@ package net.vulkanmod.render.chunk.build.frapi;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.MutableMesh;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
-import net.fabricmc.fabric.api.client.renderer.v1.render.BlockVertexConsumerProvider;
-import net.fabricmc.fabric.api.client.renderer.v1.render.FabricBlockModelRenderer;
-import net.fabricmc.fabric.api.client.renderer.v1.render.RenderLayerHelper;
+import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.core.BlockPos;
@@ -41,12 +40,12 @@ public class VulkanModRenderer implements Renderer {
 	@Override
 	public void render(ModelBlockRenderer modelBlockRenderer, BlockAndTintGetter blockAndTintGetter,
 					   BlockStateModel blockStateModel, BlockState blockState, BlockPos blockPos, PoseStack poseStack,
-					   BlockVertexConsumerProvider blockVertexConsumerProvider, boolean cull, long seed, int overlay) {
+					   Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> blockVertexConsumerProvider, boolean cull, long seed, int overlay) {
 		BlockRenderContext.POOL.get().render(blockAndTintGetter, blockStateModel, blockState, blockPos, poseStack, blockVertexConsumerProvider, cull, seed, overlay);
 	}
 
 	@Override
-	public void render(PoseStack.Pose pose, BlockVertexConsumerProvider blockVertexConsumerProvider, BlockStateModel blockStateModel,
+	public void render(PoseStack.Pose pose, Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> blockVertexConsumerProvider, BlockStateModel blockStateModel,
 					   float v, float v1, float v2, int i, int i1, BlockAndTintGetter blockAndTintGetter,
 					   BlockPos blockPos, BlockState blockState) {
 		SimpleBlockRenderContext.POOL.get().bufferModel(pose, blockVertexConsumerProvider, blockStateModel, v, v1, v2, i, i1, blockAndTintGetter, blockPos, blockState);
@@ -64,7 +63,7 @@ public class VulkanModRenderer implements Renderer {
 			float red = (tint >> 16 & 255) / 255.0F;
 			float green = (tint >> 8 & 255) / 255.0F;
 			float blue = (tint & 255) / 255.0F;
-			FabricBlockModelRenderer.render(poseStack.last(), layer -> multiBufferSource.getBuffer(RenderLayerHelper.getEntityBlockLayer(layer)), model, red, green, blue, light, overlay, blockAndTintGetter, pos, blockState);
+			modelBlockRenderer.renderModel(poseStack.last(), multiBufferSource.getBuffer(net.minecraft.client.renderer.Sheets.cutoutBlockSheet()), model, red, green, blue, light, overlay);
             ((BlockRenderDispatcherAccessor) blockRenderDispatcher).getBlockEntityModelsGetter().get().renderByBlock(blockState.getBlock(), ItemDisplayContext.NONE, poseStack, Minecraft.getInstance().gameRenderer.getSubmitNodeStorage(), light, overlay, 0);
 		}
 	}

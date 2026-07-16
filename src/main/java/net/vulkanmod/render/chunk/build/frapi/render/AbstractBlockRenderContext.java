@@ -8,7 +8,6 @@ import net.fabricmc.fabric.api.client.renderer.v1.model.ModelHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import net.vulkanmod.render.chunk.build.frapi.helper.ColorHelper;
 import net.vulkanmod.render.chunk.build.frapi.mesh.EncodingFormat;
 import net.vulkanmod.render.chunk.build.frapi.mesh.MutableQuadViewImpl;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.Brightness;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -109,7 +108,7 @@ public abstract class AbstractBlockRenderContext extends AbstractRenderContext {
 	public void prepareForBlock(BlockState blockState, BlockPos blockPos, boolean modelAo) {
 		this.blockPos = blockPos;
 		this.blockState = blockState;
-		this.defaultLayer = ItemBlockRenderTypes.getChunkRenderType(blockState);
+		this.defaultLayer = net.minecraft.client.renderer.chunk.ChunkSectionLayer.SOLID;
 
 		this.useAO = Minecraft.useAmbientOcclusion();
 		this.defaultAO = this.useAO && modelAo && blockState.getLightEmission() == 0;
@@ -239,8 +238,8 @@ public abstract class AbstractBlockRenderContext extends AbstractRenderContext {
 		if (emissive) {
 			for (int i = 0; i < 4; i++) {
 				quad.color(i, ColorHelper.multiplyRGB(quad.color(i), data.br[i]));
-//				quad.lightmap(i, LightTexture.FULL_BRIGHT);
-				data.lm[i] = LightTexture.FULL_BRIGHT;
+//				quad.lightmap(i, Brightness.FULL_BRIGHT.pack());
+				data.lm[i] = Brightness.FULL_BRIGHT.pack();
 			}
 		} else {
 			for (int i = 0; i < 4; i++) {

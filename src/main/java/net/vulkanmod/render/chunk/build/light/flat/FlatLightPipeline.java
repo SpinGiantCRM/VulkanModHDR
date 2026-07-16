@@ -1,6 +1,6 @@
 package net.vulkanmod.render.chunk.build.light.flat;
 
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.Brightness;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.vulkanmod.render.chunk.util.SimpleDirection;
@@ -55,7 +55,7 @@ public class FlatLightPipeline implements LightPipeline {
 
         // Check emissivity of the origin state
         if (unpackEM(word)) {
-            return LightTexture.FULL_BRIGHT;
+            return Brightness.FULL_BRIGHT.pack();
         }
 
         int adjWord = this.lightCache.get(pos, SimpleDirection.of(face));

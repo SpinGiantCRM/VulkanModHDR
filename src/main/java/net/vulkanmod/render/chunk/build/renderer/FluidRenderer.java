@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderingRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRendering;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -60,7 +59,7 @@ public class FluidRenderer implements FluidRendering.DefaultRenderer {
     public void renderLiquid(BlockState blockState, FluidState fluidState, BlockPos blockPos) {
         FluidRenderHandler handler = FluidRenderingRegistry.INSTANCE.get(fluidState.getType());
 
-        TerrainRenderType renderType = TerrainRenderType.get(ItemBlockRenderTypes.getRenderLayer(fluidState));
+        TerrainRenderType renderType = TerrainRenderType.get(net.minecraft.client.renderer.chunk.ChunkSectionLayer.TRANSLUCENT);
         renderType = TerrainRenderType.getRemapped(renderType);
         TerrainBufferBuilder bufferBuilder = this.resources.builderPack.builder(renderType).getBufferBuilder(QuadFacing.UNDEFINED.ordinal());
 

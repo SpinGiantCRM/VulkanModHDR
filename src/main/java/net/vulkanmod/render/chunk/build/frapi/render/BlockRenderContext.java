@@ -3,9 +3,8 @@ package net.vulkanmod.render.chunk.build.frapi.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.ShadeMode;
-import net.fabricmc.fabric.api.client.renderer.v1.render.BlockVertexConsumerProvider;
+import java.util.function.Function;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
@@ -28,7 +27,7 @@ import net.vulkanmod.render.chunk.build.light.smooth.SmoothLightPipeline;
 public class BlockRenderContext extends AbstractBlockRenderContext {
 	public static final ThreadLocal<BlockRenderContext> POOL = ThreadLocal.withInitial(BlockRenderContext::new);
 
-	private BlockVertexConsumerProvider vertexConsumers;
+	private Function<ChunkSectionLayer, VertexConsumer> vertexConsumers;
     private ChunkSectionLayer defaultRenderLayer;
 
 	private final ArrayLightDataCache lightDataCache = new ArrayLightDataCache();
@@ -49,13 +48,13 @@ public class BlockRenderContext extends AbstractBlockRenderContext {
 		random = RandomSource.create();
     }
 
-	public void render(BlockAndTintGetter blockView, BlockStateModel model, BlockState state, BlockPos pos, PoseStack matrixStack, BlockVertexConsumerProvider buffers, boolean cull, long seed, int overlay) {
+	public void render(BlockAndTintGetter blockView, BlockStateModel model, BlockState state, BlockPos pos, PoseStack matrixStack, Function<ChunkSectionLayer, VertexConsumer> buffers, boolean cull, long seed, int overlay) {
 		Vec3 offset = state.getOffset(pos);
 		matrixStack.translate(offset.x, offset.y, offset.z);
 
 		this.blockPos = pos;
 		this.vertexConsumers = buffers;
-        this.defaultRenderLayer = ItemBlockRenderTypes.getChunkRenderType(state);
+        this.defaultRenderLayer = net.minecraft.client.renderer.chunk.ChunkSectionLayer.SOLID;
 		this.matrices = matrixStack.last();
 		this.overlay = overlay;
 		this.random.setSeed(seed);

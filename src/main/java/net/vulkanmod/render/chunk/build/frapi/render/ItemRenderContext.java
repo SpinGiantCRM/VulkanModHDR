@@ -11,12 +11,11 @@ import java.util.function.Supplier;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.MeshView;
 import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.client.renderer.v1.render.FabricLayerRenderState;
-import net.fabricmc.fabric.api.client.renderer.v1.render.RenderLayerHelper;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.vulkanmod.mixin.render.frapi.ItemRendererAccessor;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.Brightness;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.Sheets;
@@ -107,7 +106,7 @@ public class ItemRenderContext extends AbstractRenderContext {
 	private void shadeQuad(MutableQuadViewImpl quad, boolean emissive) {
 		if (emissive) {
 			for (int i = 0; i < 4; i++) {
-				quad.lightmap(i, LightTexture.FULL_BRIGHT);
+				quad.lightmap(i, Brightness.FULL_BRIGHT.pack());
 			}
 		} else {
 			final int lightmap = this.lightmap;
@@ -125,7 +124,7 @@ public class ItemRenderContext extends AbstractRenderContext {
         if (quadRenderLayer == null) {
             layer = defaultLayer;
         } else {
-            layer = RenderLayerHelper.getEntityBlockLayer(quadRenderLayer);
+            layer = net.minecraft.client.renderer.chunk.ChunkSectionLayer.BUFFER_MAP.get(quadRenderLayer);
         }
 
         if (ignoreQuadGlint || quadGlint == null) {
